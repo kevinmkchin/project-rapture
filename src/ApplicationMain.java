@@ -9,8 +9,8 @@ import java.awt.event.KeyListener;
 
 public class ApplicationMain extends JFrame implements KeyListener {
 
-    private final int TERMINAL_WIDTH = 64;
-    private final int TERMINAL_HEIGHT = 36;
+    private final int TERMINAL_WIDTH = 96;
+    private final int TERMINAL_HEIGHT = 54;
 
     private AsciiPanel terminal;
     private Screen screen;
@@ -47,6 +47,7 @@ public class ApplicationMain extends JFrame implements KeyListener {
     public static void main(String[] args) {
         ApplicationMain app = new ApplicationMain();
         app.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        app.setTitle("Settlers of the Rapture");
         app.setMinimumSize(app.getSize());
         app.setLocationRelativeTo(null);
         app.setVisible(true);

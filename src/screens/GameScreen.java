@@ -3,32 +3,33 @@ package screens;
 import asciiPanel.AsciiPanel;
 import world.Tile;
 import world.World;
-import world.WorldBuilder;
+import world.WorldGenerator;
 
+import java.awt.*;
 import java.awt.event.KeyEvent;
 
 public class GameScreen implements Screen {
 
-    private int centerX;
-    private int centerY;
-    private int screenWidth;
-    private int screenHeight;
+    private final int worldSizeX = 256;
+    private final int worldSizeY = 256;
+
+    private int centerX = 128;
+    private int centerY = 128;
+    private int screenWidth = 64; //out of TERMINAL_WIDTH
+    private int screenHeight = 52; //out of TERMINAL_HEIGHT
     private World world;
 
     public GameScreen(){
-        screenWidth = 48;
-        screenHeight = 36;
         createWorld();
     }
 
     private void createWorld(){
-        world = new WorldBuilder(80, 80).makeCaves().build();
+        world = new WorldGenerator(worldSizeX, worldSizeY).generateWorld().getNewWorld();
     }
 
     public int getScrollX() {
         return Math.max(0, Math.min(centerX - screenWidth / 2, world.width() - screenWidth));
     }
-
     public int getScrollY() {
         return Math.max(0, Math.min(centerY - screenHeight / 2, world.height() - screenHeight));
     }
@@ -39,56 +40,64 @@ public class GameScreen implements Screen {
                 int wx = x + left;
                 int wy = y + top;
 
-                terminal.write(world.glyph(wx, wy), x, y, world.color(wx, wy));
+                try {
+                    terminal.write(world.groundGlyph(wx, wy), x, y, world.groundColor(wx, wy));
+                    terminal.write(world.aboveGlyph(wx, wy), x, y, world.aboveColor(wx, wy));
+                } catch (NullPointerException e){
+                    //if array item is null, ignore it
+                }
             }
         }
     }
 
+    //check collision in moving direction then move
     private void movePlayer(int mx, int my){
         if(my == -1){
-            if (!checkAdjacentTile("north", Tile.WALL)) {
+            if (!checkAdjacentGroundTile("north", Tile.MOUNTAIN)) {
                 actuallyMove(mx, my);
             }
         }else if(my == 1){
-            if (!checkAdjacentTile("south", Tile.WALL)) {
+            if (!checkAdjacentGroundTile("south", Tile.MOUNTAIN)) {
                 actuallyMove(mx, my);
             }
         }else if(mx == -1){
-            if (!checkAdjacentTile("west", Tile.WALL)) {
+            if (!checkAdjacentGroundTile("west", Tile.MOUNTAIN)) {
                 actuallyMove(mx, my);
             }
         }else if(mx == 1){
-            if (!checkAdjacentTile("east", Tile.WALL)) {
+            if (!checkAdjacentGroundTile("east", Tile.MOUNTAIN)) {
                 actuallyMove(mx, my);
             }
         }
     }
-
     private void actuallyMove(int mx, int my){
         centerY = Math.max(0, Math.min(centerY + my, world.height() - 1));
         centerX = Math.max(0, Math.min(centerX + mx, world.width() - 1));
     }
 
     //requires str is north west east south
-    //effect returns if tile in adjacent direction matches the given tile
-    private boolean checkAdjacentTile(String str, Tile tile){
-        switch (str){
-            case "north": return world.tile(centerX, centerY - 1).equals(tile);
-            case "west": return world.tile(centerX - 1, centerY).equals(tile);
-            case "east": return world.tile(centerX + 1, centerY).equals(tile);
-            case "south": return world.tile(centerX, centerY + 1).equals(tile);
+    //effect returns if groundTile in adjacent direction matches the given groundTile
+    private boolean checkAdjacentGroundTile(String dir, Tile tile){
+        switch (dir){
+            case "north": return world.groundTile(centerX, centerY - 1).equals(tile);
+            case "west": return world.groundTile(centerX - 1, centerY).equals(tile);
+            case "east": return world.groundTile(centerX + 1, centerY).equals(tile);
+            case "south": return world.groundTile(centerX, centerY + 1).equals(tile);
         }
         return false;
     }
 
     @Override
     public void displayOutput(AsciiPanel terminal) {
+        terminal.setDefaultBackgroundColor(new Color(20,20,20));
         int left = getScrollX();
         int top = getScrollY();
 
         displayTiles(terminal, left, top);
-
         terminal.write('@', centerX - left, centerY - top);
+
+        terminal.write("x-pos: " + centerX, screenWidth + 1, 1);
+        terminal.write("y-pos: " + centerY, screenWidth + 1, 2);
     }
 
     @Override
