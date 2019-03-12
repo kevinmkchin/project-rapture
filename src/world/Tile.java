@@ -6,9 +6,13 @@ import java.awt.Color;
 
 public enum Tile {
 
-    FLOOR((char)250, AsciiPanel.yellow),
-    WALL((char)177, AsciiPanel.yellow),
-    BOUNDS('x', AsciiPanel.brightBlack);
+    TREE((char)157, new Color(134, 67, 29)),
+    SOIL((char)34, new Color(0, 177, 64)),
+    SAND((char)240, new Color(177, 175, 84)),
+    WATER((char) 247, new Color(47, 108, 167)),
+
+    MOUNTAIN((char)30, new Color(66, 74, 75)), //remove later since we not using wall
+    BOUNDS('X', AsciiPanel.brightBlack);
 
     private char glyph;
     public char glyph() { return glyph; }

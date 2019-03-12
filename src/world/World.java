@@ -3,31 +3,47 @@ package world;
 import java.awt.*;
 
 public class World {
-    private Tile[][] tiles;
+
+    private Tile[][] groundTiles;
+    private Tile[][] aboveTiles;
+    //list of zone tiles
+
+
     private int width;
     public int width() { return width; }
 
     private int height;
     public int height() { return height; }
 
-    public World(Tile[][] tiles){
-        this.tiles = tiles;
-        this.width = tiles.length;
-        this.height = tiles[0].length;
+    public World(Tile[][] groundTiles, Tile[][] aboveTiles){
+        this.groundTiles = groundTiles;
+        this.aboveTiles = aboveTiles;
+        this.width = this.groundTiles.length;
+        this.height = this.groundTiles[0].length;
     }
 
-    public Tile tile(int x, int y){
+    public Tile groundTile(int x, int y){
         if (x < 0 || x >= width || y < 0 || y >= height)
             return Tile.BOUNDS;
         else
-            return tiles[x][y];
+            return groundTiles[x][y];
     }
-
-    public char glyph(int x, int y){
-        return tile(x, y).glyph();
+    public Tile aboveTile(int x, int y){
+        if (x < 0 || x >= width || y < 0 || y >= height)
+            return Tile.BOUNDS;
+        else
+            return aboveTiles[x][y];
     }
-
-    public Color color(int x, int y){
-        return tile(x, y).color();
+    public char groundGlyph(int x, int y){
+        return groundTile(x, y).glyph();
+    }
+    public Color groundColor(int x, int y){
+        return groundTile(x, y).color();
+    }
+    public char aboveGlyph(int x, int y){
+        return aboveTile(x, y).glyph();
+    }
+    public Color aboveColor(int x, int y){
+        return aboveTile(x, y).color();
     }
 }
