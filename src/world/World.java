@@ -4,9 +4,8 @@ import java.awt.*;
 
 public class World {
 
-    private Tile[][] groundTiles;
-    private Tile[][] aboveTiles;
-    //list of zone tiles
+    //1D is layer, 2D is horizontal, 3D is vertical
+    private Tile[][][] tiles;
 
 
     private int width;
@@ -15,24 +14,23 @@ public class World {
     private int height;
     public int height() { return height; }
 
-    public World(Tile[][] groundTiles, Tile[][] aboveTiles){
-        this.groundTiles = groundTiles;
-        this.aboveTiles = aboveTiles;
-        this.width = this.groundTiles.length;
-        this.height = this.groundTiles[0].length;
+    public World(Tile[][][] tiles){
+        this.tiles = tiles;
+        this.width = this.tiles[0].length;
+        this.height = this.tiles[0][0].length;
     }
 
     public Tile groundTile(int x, int y){
         if (x < 0 || x >= width || y < 0 || y >= height)
             return Tile.BOUNDS;
         else
-            return groundTiles[x][y];
+            return tiles[0][x][y];
     }
     public Tile aboveTile(int x, int y){
         if (x < 0 || x >= width || y < 0 || y >= height)
             return Tile.BOUNDS;
         else
-            return aboveTiles[x][y];
+            return tiles[1][x][y];
     }
     public char groundGlyph(int x, int y){
         return groundTile(x, y).glyph();
