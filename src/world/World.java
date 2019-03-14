@@ -7,6 +7,7 @@ public class World {
     //1D is layer, 2D is horizontal, 3D is vertical
     private Tile[][][] tiles;
 
+    private String name;
 
     private int width;
     public int width() { return width; }
@@ -14,8 +15,9 @@ public class World {
     private int height;
     public int height() { return height; }
 
-    public World(Tile[][][] tiles){
+    public World(Tile[][][] tiles, String name){
         this.tiles = tiles;
+        this.name = name;
         this.width = this.tiles[0].length;
         this.height = this.tiles[0][0].length;
     }
@@ -43,5 +45,13 @@ public class World {
     }
     public Color aboveColor(int x, int y){
         return aboveTile(x, y).color();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Tile[][][] getTiles() {
+        return tiles;
     }
 }

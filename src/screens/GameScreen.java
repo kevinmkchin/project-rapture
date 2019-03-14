@@ -1,30 +1,39 @@
 package screens;
 
 import asciiPanel.AsciiPanel;
+import persistence.SaveLoader;
 import world.Tile;
 import world.World;
 import world.WorldGenerator;
 
-import java.awt.*;
 import java.awt.event.KeyEvent;
 
 public class GameScreen implements Screen {
 
-    private final int worldSizeX = 256;
-    private final int worldSizeY = 256;
+    public static final int WORLD_SIZE_X = 256;
+    public static final int WORLD_SIZE_Y = 256;
+    public static final int TILE_LAYERS = 3;
 
     private int centerX = 128;
     private int centerY = 128;
     private int screenWidth = 64; //out of TERMINAL_WIDTH
     private int screenHeight = 52; //out of TERMINAL_HEIGHT
     private World world;
+    private SaveLoader saveLoader;
 
-    public GameScreen(){
-        createWorld();
+    public GameScreen(String worldName){
+        world = new World(new Tile[TILE_LAYERS][WORLD_SIZE_X][WORLD_SIZE_Y], worldName);
+        if(SaveLoader.checkExist(worldName)) {
+            saveLoader = new SaveLoader(worldName, world);
+            world = saveLoader.load();
+        }else {
+            createWorld(worldName);
+            saveLoader = new SaveLoader(worldName, world);
+        }
     }
 
-    private void createWorld(){
-        world = new WorldGenerator(worldSizeX, worldSizeY).generateWorld().getNewWorld();
+    private void createWorld(String name){
+        world = new WorldGenerator(WORLD_SIZE_X, WORLD_SIZE_Y).generateWorld().getNewWorld(name);
     }
 
     public int getScrollX() {
@@ -87,14 +96,18 @@ public class GameScreen implements Screen {
         return false;
     }
 
+    private Screen saveAndQuit(){ //returns main menu screen
+        saveLoader.save();
+        return new MainMenu();
+    }
+
     @Override
     public void displayOutput(AsciiPanel terminal) {
-        terminal.setDefaultBackgroundColor(new Color(20,20,20));
         int left = getScrollX();
         int top = getScrollY();
 
         displayTiles(terminal, left, top);
-        terminal.write('@', centerX - left, centerY - top);
+        terminal.write('X', centerX - left, centerY - top);
 
         terminal.write("x-pos: " + centerX, screenWidth + 1, 1);
         terminal.write("y-pos: " + centerY, screenWidth + 1, 2);
@@ -107,6 +120,7 @@ public class GameScreen implements Screen {
             case KeyEvent.VK_RIGHT: movePlayer( 1, 0); break;
             case KeyEvent.VK_UP: movePlayer( 0,-1); break;
             case KeyEvent.VK_DOWN: movePlayer( 0, 1); break;
+            case KeyEvent.VK_BACK_SPACE: return saveAndQuit();
         }
 
         return this;

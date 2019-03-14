@@ -4,6 +4,7 @@ import screens.MainMenu;
 import screens.Screen;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -18,6 +19,7 @@ public class ApplicationMain extends JFrame implements KeyListener {
     public ApplicationMain(){
         super();
         terminal = new AsciiPanel(TERMINAL_WIDTH, TERMINAL_HEIGHT, AsciiFont.CP437_16x16);
+        terminal.setDefaultBackgroundColor(new Color(20,20,20));
         add(terminal);
         pack();
         screen = new MainMenu();
