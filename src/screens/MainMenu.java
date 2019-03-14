@@ -14,11 +14,17 @@ public class MainMenu implements Screen {
         terminal.write("88\"Yb   dP__Yb  88\"\"\"    88   Y8   8P 88\"Yb  88\"\"",6,6);
         terminal.write("88  Yb dP\"\"\"\"Yb 88       88   `YbodP' 88  Yb 888888",6,7);
         terminal.writeCenter("-- press [enter] to start --", 22);
+        terminal.writeCenter("-- [L]oad World --", 24);
+        terminal.writeCenter("-- [O]ptions --", 26);
 
     }
 
     @Override
     public Screen respondToUserInput(KeyEvent key) {
-        return key.getKeyCode() == KeyEvent.VK_ENTER ? new GameScreen() : this; //return play screen or this
+        switch (key.getKeyCode()){
+            case KeyEvent.VK_ENTER: return new WorldSetupScreen();
+            case KeyEvent.VK_L: return new LoadWorldScreen();
+        }
+        return this;
     }
 }

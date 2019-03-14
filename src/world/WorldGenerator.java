@@ -1,36 +1,40 @@
 package world;
 
+import screens.GameScreen;
+
 public class WorldGenerator {
 
     private int width;
     private int height;
     private Tile[][][] tiles;
 
-    private float[][] waterArray;
-    private float[][] mountainArray;
+    private float[][] noiseArray;
 
     public WorldGenerator(int width, int height){
         this.width = width;
         this.height = height;
-        this.tiles = new Tile[3][width][height];
+        this.tiles = new Tile[GameScreen.TILE_LAYERS][width][height];
     }
 
-    public World getNewWorld(){
-        return new World(tiles);
+    public World getNewWorld(String name){
+        return new World(tiles, name);
     }
 
     public WorldGenerator generateWorld(){
         GenerationTools gt = new GenerationTools();
 
         // 1. Ground/Floor tiles
-        waterArray = gt.generatePerlinNoise(width, height, 0.05f);
+        noiseArray = gt.generatePerlinNoise(width, height, 0.05f);
         assignWaterTiles();
-        // 2. Trees (more to come here)
+        // 2. Rich soil
+        noiseArray = gt.generatePerlinNoise(width, height, 0.1f);
+        assignRichSoilTiles();
+        // 3. Trees (more to come here)
         assignTrees();
-        // 3. Mountains
-        mountainArray = gt.generatePerlinNoise(width, height, 0.02f); //big mountains
+        // 4. Mountains
+        noiseArray = gt.generatePerlinNoise(width, height, 0.01f); //big mountains
         assignMountainTiles();
-        mountainArray = gt.generatePerlinNoise(width, height, 0.075f); //small mountains
+        noiseArray = gt.generatePerlinNoise(width, height, 0.075f); //small mountains
         assignMountainTiles();
 
         return this;
@@ -39,7 +43,7 @@ public class WorldGenerator {
     private void assignWaterTiles(){
         for(int i = 0; i < width; i++){
             for(int j = 0; j < height; j++){
-                float noiseVal = waterArray[i][j];
+                float noiseVal = noiseArray[i][j];
                 if(noiseVal <= 0.35){
                     tiles[0][i][j] = Tile.WATER;
                 }else if(noiseVal <= 0.38){
@@ -51,10 +55,22 @@ public class WorldGenerator {
         }
     }
 
+    private void assignRichSoilTiles() {
+        for(int i = 0; i < width; i++){
+            for(int j = 0; j < height; j++){
+                float noiseVal = noiseArray[i][j];
+                if(noiseVal >= 0.8){
+                    if(tiles[0][i][j].equals(Tile.SOIL))
+                        tiles[0][i][j] = Tile.RICH_SOIL;
+                }
+            }
+        }
+    }
+
     private void assignTrees(){
         for(int i = 0; i < width; i++){
             for(int j = 0; j < height; j++){
-                if(Math.random() < 0.2){
+                if(Math.random() < 0.12){
                     if(!tiles[0][i][j].equals(Tile.WATER) && !tiles[0][i][j].equals(Tile.SAND)){
                         tiles[1][i][j] = Tile.TREE;
                     }
@@ -66,7 +82,7 @@ public class WorldGenerator {
     private void assignMountainTiles(){
         for(int i = 0; i < width; i++){
             for(int j = 0; j < height; j++){
-                float noiseVal = mountainArray[i][j];
+                float noiseVal = noiseArray[i][j];
                 if(noiseVal >= 0.70){
                     if(tiles[0][i][j].equals(Tile.WATER)){
                         continue;
