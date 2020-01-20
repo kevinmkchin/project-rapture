@@ -1,5 +1,7 @@
 # project-rapture
 
+unfinished rogue-like computer game project
+
 Learned about:
 - Perlin noise
 - Working with 3D arrays
