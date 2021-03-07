@@ -1,6 +1,6 @@
 # project-rapture
 
-unfinished rogue-like computer game project
+Unfinished rogue-like computer game project. See: https://spaceghost.ca/settlers.html.
 
 Learned about:
 - Perlin noise
